@@ -1,4 +1,4 @@
-# dotnix-v2
+# NNN - Nouun's New Nix(OS) (Environment)
 
 Nix(OS) flakes configuration for my personal computer, supporting
 `x86_64-linux` with NixOS (coming soon:tm:),
@@ -13,7 +13,7 @@ Follow the [nixos-apple-silicon](https://github.com/tpwrules/nixos-apple-silicon
 guide to NixOS. Once you have mounted NixOS and generated a base config, you can create a new nix-shell with git
 and clone the repository.
 
-    nix-shell -p git --run "git clone https://github.com/nouun/dotnix-v2 /mnt/etc/nixos"
+    nix-shell -p git --run "git clone https://github.com/nouun/nnn /mnt/etc/nixos"
 
 After it has finished cloning, cd into the directory and run the following command to install NixOS with the config.
 
