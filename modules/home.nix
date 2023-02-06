@@ -1,14 +1,13 @@
-{ pkgs
-, lib
-, inputs
-, config
-, ...
-}: {
+{ pkgs, lib, inputs, config, specialArgs, ...  }:
+let
+  inherit (specialArgs) system;
+in {
   home = {
     stateVersion = "23.05";
     packages = with pkgs; [
       (ripgrep.override { withPCRE2 = true; })
       neovim
+      wezterm
 
       ## Dev
       # Fennel
@@ -42,9 +41,32 @@
     };
   };
 
-  # symlinks don't work with finder + spotlight, copy them instead
-  disabledModules = [ "targets/darwin/linkapps.nix" ];
-  home.activation = lib.mkIf pkgs.stdenv.isDarwin {
+  wayland.windowManager.sway = {
+    enable = true;
+    
+    config = rec {
+      modifier = "Mod4";
+      terminal = "wezterm";
+      startup = [
+        { command = "wezterm"; }
+      ];
+      input = {
+        "*" = {
+          xkb_layout = "us";
+          xkb_variant = "dvorak";
+          xkb_options = "caps:escape";
+        };
+      };
+    };
+  };
+
+  # Symlinks don't work with finder and spotlight so they need to be copied instead.
+  disabledModules =
+    if system.isDarwin
+      then [ "targets/darwin/linkapps.nix" ]
+      else [];
+
+  home.activation = lib.mkIf system.isDarwin {
     copyApplications =
       let
         apps = pkgs.buildEnv {

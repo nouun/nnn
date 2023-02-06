@@ -31,21 +31,30 @@
 
       mkConfiguration = args: args.sys (rec {
         system = args.arch or "x86_64-linux";
-        specialArgs = args.args;
+        specialArgs = { inherit inputs; } // args.conf;
         modules = [
-          ./modules/system.nix
-          (if args.arch == "aarch64-darwin"
-            then home-manager.darwinModules.home-manager
-            else home-manager.nixosModules.home-manager)
+         ./modules/system.nix
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
               users.nouun = import ./modules/home.nix;
-              extraSpecialArgs = args.args;
+              extraSpecialArgs = args.conf;
             };
           }
-        ];
+        ] ++
+        (if args.conf.system.isLinux
+          then ([
+           ./modules/system-linux.nix
+           home-manager.nixosModules.home-manager
+          ] ++
+           (if args.conf.system.isM1
+             then [inputs.nixos-apple-silicon.nixosModules.default]
+             else []))
+          else [
+           ./modules/system-darwin.nix
+           home-manager.darwinModules.home-manager
+          ]);
       });
     in
     rec {
@@ -59,12 +68,48 @@
         in import ./shell.nix { inherit pkgs; }
       );
 
-      darwinConfigurations.nouun-macbook = mkConfiguration {
+      darwinConfigurations.macbook = mkConfiguration {
         sys = darwin.lib.darwinSystem;
         arch = "aarch64-darwin";
-        args = {
+        conf = {
           capabilities = {
             hasTouchID = true;
+          };
+          system = {
+            isDarwin = true;
+            isLinux = false;
+            isM1 = true;
+          };
+          networking = {
+            hostName = "macbook";
+            computerName = "Nouun's MacBook";
+          };
+        };
+      };
+
+      nixosConfigurations.nixbook = mkConfiguration {
+        sys = nixpkgs.lib.nixosSystem;
+        arch = "aarch64-darwin";
+        conf = {
+          capabilities = {
+            hasTouchID = true;
+          };
+          system = {
+            isDarwin = false;
+            isLinux = true;
+            isM1 = true;
+          };
+          networking = {
+            hostName = "nixbook";
+            computerName = "Nouun's NixBook";
+
+            wireless = {
+              enable = true;
+
+              interfaces = [
+                "wlp1s0f0"
+              ];
+            };
           };
         };
       };
