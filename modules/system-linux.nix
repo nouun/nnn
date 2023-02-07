@@ -1,6 +1,6 @@
 { pkgs, lib, specialArgs, ... }:
 let
-  inherit (specialArgs) system networking;
+  inherit (specialArgs) system networking userConfig nLib;
   inherit (lib) mkIf;
 in {
   imports = [
@@ -40,12 +40,15 @@ in {
 
     upower.enable = true;
 
-    xserver = {
+    xserver = 
+    let
+      layoutConfig = nLib.strings.getLayoutArgs userConfig.layout;
+    in {
       enable = true;
 
-      layout = "us";
-      xkbVariant = "dvorak";
-      xkbOptions = "caps:escape";
+      layout = layoutConfig.layout;
+      xkbVariant = mkIf layoutConfig.hasVariant layoutConfig.variant;
+      xkbOptions = mkIf layoutConfig.hasOptions layoutConfig.options;
 
       extraLayouts = with builtins;
         lib.pipe ./layouts [
@@ -99,7 +102,6 @@ in {
     useDHCP = false;
     interfaces = mkIf networking.wireless.enable
       (builtins.listToAttrs (map (v: { name = v; value = { useDHCP = true; }; }) networking.wireless.interfaces));
-
 
     nameservers = [
       "1.1.1.1"

@@ -22,6 +22,30 @@ in {
 
   programs = {
     bash = import ./programs/bash.nix pkgs;
+
+    fzf = {
+      enable = true;
+
+      enableBashIntegration = true;
+    # colors
+    # fg	Text
+    # bg	Background
+    # preview-fg	Preview window text
+    # preview-bg	Preview window background
+    # hl	Highlighted substrings
+    # fg+	Text (current line)
+    # bg+	Background (current line)
+    # gutter	Gutter on the left (defaults to bg+)
+    # hl+	Highlighted substrings (current line)
+    # info	Info
+    # border	Border of the preview window and horizontal separators (--border)
+    # prompt	Prompt
+    # pointer	Pointer to the current line
+    # marker	Multi-select marker
+    # spinner	Streaming input indicator
+    # header	Header
+    };
+
     direnv = {
       enable = true;
 

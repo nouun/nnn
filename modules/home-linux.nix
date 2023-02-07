@@ -10,11 +10,14 @@
         { command = "wezterm"; }
       ];
       input = {
-        "*" = {
-          xkb_layout = "us";
-          xkb_variant = "dvorak";
-          xkb_options = "caps:escape";
-        };
+        "*" = 
+	  let
+            layoutConfig = nLib.strings.getLayoutArgs userConfig.layout;
+	  in {
+            xkb_layout = layoutConfig.layout;
+            xkb_variant = mkIf layoutConfig.hasVariant layoutConfig.variant;
+            xkb_options = mkIf layoutConfig.hasOptions layoutConfig.options;
+          };
       };
     };
   };

@@ -20,6 +20,38 @@
   outputs = inputs@{ self, darwin, nixpkgs, home-manager, ... }:
     let
       inherit (self) outputs;
+      inherit (nixpkgs) lib;
+
+      nLib = import ./lib { inherit lib; pkgs = nixpkgs; };
+
+      userConfig = rec {
+        layout = "us(dvorak);caps:escape";
+      };
+
+      mkConfiguration = args: args.sys (let
+	config = args.conf // { userConfig = userConfig; };
+	systemName = if config.system.isDarwin then "darwin" else "linux";
+	hmSystemName = (if config.system.isDarwin then "darwin" else "nixos") + "Modules";
+      in rec {
+        system = args.arch or "x86_64-linux";
+        specialArgs = { inherit inputs nLib; } // config;
+        modules = [
+          ./modules/system.nix
+          ./modules/system-${systemName}.nix
+	  home-manager.${hmSystemName}.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.nouun = import ./modules/home.nix;
+              extraSpecialArgs = { inherit nLib; } // config;
+            };
+          }
+        ] ++
+        (if config.system.isLinux && config.system.isM1
+          then [inputs.nixos-apple-silicon.nixosModules.default]
+          else []);
+      });
 
       forAllSystems = nixpkgs.lib.genAttrs [
         "aarch64-linux"
@@ -28,50 +60,14 @@
         "aarch64-darwin"
         "x86_64-darwin"
       ];
-
-      mkConfiguration = args: args.sys (let
-        a = true;
-      in rec {
-        system = args.arch or "x86_64-linux";
-        specialArgs = { inherit inputs; } // args.conf;
-        modules = [
-         ./modules/system.nix
-         ./modules/system-${if args.conf.system.isDarwin then "darwin" else "linux"}.nix
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.nouun = import ./modules/home.nix;
-              extraSpecialArgs = args.conf;
-            };
-          }
-        ] ++
-        (if args.conf.system.isLinux
-          then ([
-           ./modules/system-linux.nix
-           home-manager.nixosModules.home-manager
-          ] ++
-           (if args.conf.system.isM1
-             then [inputs.nixos-apple-silicon.nixosModules.default]
-             else []))
-          else [
-           ./modules/system-darwin.nix
-           home-manager.darwinModules.home-manager
-          ]);
-      });
     in
     rec {
-      packages = forAllSystems (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
-        in import ./pkgs { inherit pkgs; }
-      );
-
       devShells = forAllSystems (system:
         let pkgs = nixpkgs.legacyPackages.${system};
         in import ./shell.nix { inherit pkgs; }
       );
 
-      darwinConfigurations.macbook = mkConfiguration {
+      darwinConfigurations.nixbook = mkConfiguration {
         sys = darwin.lib.darwinSystem;
         arch = "aarch64-darwin";
         conf = {
@@ -84,8 +80,8 @@
             isM1 = true;
           };
           networking = {
-            hostName = "macbook";
-            computerName = "Nouun's MacBook";
+            hostName = "nixbook";
+            computerName = "Nouuns NixBook";
           };
         };
       };
@@ -104,7 +100,7 @@
           };
           networking = {
             hostName = "nixbook";
-            computerName = "Nouun's NixBook";
+            computerName = "Nouuns NixBook";
 
             wireless = {
               enable = true;

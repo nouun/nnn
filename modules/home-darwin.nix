@@ -1,7 +1,5 @@
 { pkgs, lib, inputs, config, ...  }:
-let
-  inherit (specialArgs) system;
-in {
+{
   # Symlinks don't work with finder and spotlight so they need to be copied instead.
   disabledModules = [ "targets/darwin/linkapps.nix" ];
 

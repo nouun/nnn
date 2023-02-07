@@ -22,9 +22,10 @@ After it has finished cloning, cd into the directory and run the following comma
 This may take a while as it has to compile the kernel, but once that is completed you will be prompted for your root
 password. Reboot and you should be able to login.
 
-Once you have NixOS setup and installed, you can switch to this config by using the following command.
+Once you have NixOS setup and installed, you can switch to this config by using the following command. If your
+host-name is anypthing other than `nixbook` you need to append `nixbook` after `#`.
 
-    sudo nixos-rebuild switch --flake .#nixbook
+    sudo nixos-rebuild switch --flake .#
 
 # MacOS
 
@@ -38,3 +39,8 @@ previous configuration.
 
     nix build .#darwinConfigurations.macbook.system
     ./result/sw/bin/darwin-rebuild switch --flake .
+
+Once you have nix-darwin setup and installed, you can switch to this config by using the following command. If your
+host-name is anypthing other than `nixbook` you need to append `nixbook` after `#`.
+
+    darwin-rebuild switch --flake .#

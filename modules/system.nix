@@ -18,11 +18,16 @@ in {
     # TODO: This seems to work on nix-darwin but not NixOS. Do I mkIf system.isDarwin or is there something else that could be done?
     # nixPath = lib.mapAttrs (key: value: "${key}=${value.to.path}") config.nix.registry;
 
+    gc = {
+      automatic = true;
+    };
+
     settings = {
       experimental-features = "nix-command flakes";
       auto-optimise-store = true;
       sandbox = true;
     };
+
     extraOptions = ''
       warn-dirty = false
     '' + (if system.isDarwin then ''
