@@ -29,11 +29,14 @@
         "x86_64-darwin"
       ];
 
-      mkConfiguration = args: args.sys (rec {
+      mkConfiguration = args: args.sys (let
+        a = true;
+      in rec {
         system = args.arch or "x86_64-linux";
         specialArgs = { inherit inputs; } // args.conf;
         modules = [
          ./modules/system.nix
+         ./modules/system-${if args.conf.system.isDarwin then "darwin" else "linux"}.nix
           {
             home-manager = {
               useGlobalPkgs = true;

@@ -1,6 +1,6 @@
 { pkgs, lib, specialArgs, ... }:
 let
-  inherit (specialArgs) system capabilities;
+  inherit (specialArgs) system capabilities networking;
   inherit (lib) mkIf;
 in {
   networking.computerName = networking.computerName;
