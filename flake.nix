@@ -4,7 +4,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "github:nouun/nix-darwin/launchpad-options";
+      #url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {

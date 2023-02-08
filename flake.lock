@@ -7,15 +7,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1673295039,
-        "narHash": "sha256-AsdYgE8/GPwcelGgrntlijMg4t3hLFJFCRF3tL5WVjA=",
-        "owner": "LnL7",
+        "lastModified": 1675765320,
+        "narHash": "sha256-NpJ3riwd6errvH+MYWZ51rEJRKLG833FkvJNy2MYWIg=",
+        "owner": "nouun",
         "repo": "nix-darwin",
-        "rev": "87b9d090ad39b25b2400029c64825fc2a8868943",
+        "rev": "b24f193ba0709ee64e2b62eb10e82e1a1b1772f5",
         "type": "github"
       },
       "original": {
-        "owner": "LnL7",
+        "owner": "nouun",
+        "ref": "launchpad-options",
         "repo": "nix-darwin",
         "type": "github"
       }
